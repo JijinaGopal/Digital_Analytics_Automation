@@ -1,0 +1,15 @@
+# 🔐 Prevent secret credentials from being pushed
+.streamlit/secrets.toml
+
+# 🧹 Ignore any local data files
+*.csv
+*.bak
+*.db
+
+# 🔁 Ignore auto-generated folders
+__pycache__/
+*.pyc
+*.ipynb_checkpoints/
+
+# 💻 VS Code settings (optional)
+.vscode/
