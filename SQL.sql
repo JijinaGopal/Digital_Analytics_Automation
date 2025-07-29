@@ -1,7 +1,6 @@
 
 USE E_Commerce_Project
 
-
 --------------------------------------------DATA CLEANING--------------------------------------------------------
 TRUNCATE TABLE orders;
 
@@ -15,6 +14,12 @@ WITH (
     CODEPAGE = 'ACP'
 );
 
+DELETE FROM orders
+WHERE order_id IS NULL OR created_at IS NULL;
+
+UPDATE orders
+SET created_at = CONVERT(varchar, TRY_CONVERT(datetime, created_at), 120)
+WHERE TRY_CONVERT(datetime, created_at) IS NOT NULL;
 
 TRUNCATE TABLE order_items;
 
@@ -28,7 +33,12 @@ WITH (
     CODEPAGE = 'ACP'
 );
 
+DELETE FROM order_items
+WHERE order_item_id IS NULL OR created_at IS NULL;
 
+UPDATE order_items
+SET created_at = CONVERT(varchar, TRY_CONVERT(datetime, created_at), 120)
+WHERE TRY_CONVERT(datetime, created_at) IS NOT NULL;
 
 TRUNCATE TABLE order_item_refunds;
 
@@ -42,6 +52,12 @@ WITH (
     CODEPAGE = 'ACP'
 );
 
+DELETE FROM order_item_refunds
+WHERE order_item_refund_id IS NULL OR created_at IS NULL;
+
+UPDATE order_item_refunds
+SET created_at = CONVERT(varchar, TRY_CONVERT(datetime, created_at), 120)
+WHERE TRY_CONVERT(datetime, created_at) IS NOT NULL;
 
 TRUNCATE TABLE products;
 
@@ -55,7 +71,6 @@ WITH (
     CODEPAGE = 'ACP'
 );
 
-
 TRUNCATE TABLE website_pageviews;
 
 BULK INSERT website_pageviews
@@ -68,9 +83,13 @@ WITH (
     CODEPAGE = 'ACP'
 );
 
+DELETE FROM website_pageviews
+WHERE website_pageview_id IS NULL OR created_at IS NULL;
 
+UPDATE website_pageviews
+SET created_at = CONVERT(varchar, TRY_CONVERT(datetime, created_at), 120)
+WHERE TRY_CONVERT(datetime, created_at) IS NOT NULL;
 
--- Truncate and import website_sessions
 TRUNCATE TABLE website_sessions;
 BULK INSERT website_sessions
 FROM 'C:\Users\Administrator\Desktop\Automation\data\website_sessions.csv'
@@ -82,53 +101,15 @@ WITH (
     CODEPAGE = 'ACP'
 );
 
+DELETE FROM website_sessions
+WHERE website_session_id IS NULL OR created_at IS NULL;
 
-
--- Drop the table if it already exists 
-IF OBJECT_ID('dbo.w_sessions', 'U') IS NOT NULL
-    DROP TABLE dbo.w_sessions;
-
-
-SELECT *
-INTO dbo.w_sessions
-FROM dbo.website_sessions;
-
----Delete null
-DELETE FROM orders
-WHERE order_id IS NULL
-or created_at IS NULL
-
-DELETE FROM order_items
-WHERE order_item_id IS NULL
-or created_at IS NULL
-
-DELETE FROM order_item_refunds
-WHERE order_item_refund_id IS NULL
-or created_at IS NULL
-
-DELETE FROM website_pageviews
-WHERE website_pageview_id IS NULL
-or created_at IS NULL
-
-
-DELETE FROM w_sessions
-WHERE website_session_id IS NULL
-or created_at IS NULL
-
-
----updating nulls with unknown
-UPDATE w_sessions
-SET                           
-    utm_source        = ISNULL(utm_source, 'unknown'),
-    utm_campaign      = ISNULL(utm_campaign, 'unknown'),
-    utm_content       = ISNULL(utm_content, 'unknown'),
-    device_type       = ISNULL(device_type, 'unknown'),
-    http_referer      = ISNULL(http_referer, 'unknown')
-WHERE
-    is_repeat_session IS NULL OR
-    utm_source IS NULL OR
-    utm_campaign IS NULL OR
-    utm_content IS NULL OR
-    device_type IS NULL OR
-    http_referer IS NULL;
+UPDATE website_sessions
+SET created_at = CONVERT(varchar, TRY_CONVERT(datetime, created_at), 120),
+    utm_source = ISNULL(utm_source, 'unknown'),
+    utm_campaign = ISNULL(utm_campaign, 'unknown'),
+    utm_content = ISNULL(utm_content, 'unknown'),
+    device_type = ISNULL(device_type, 'unknown'),
+    http_referer = ISNULL(http_referer, 'unknown')
+WHERE TRY_CONVERT(datetime, created_at) IS NOT NULL;
 
