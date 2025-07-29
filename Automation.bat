@@ -1,6 +1,6 @@
 @echo off
 
-echo STEP 1: Import website_sessions.csv into SQL Server and clean ...
+echo STEP 1: Import all files into SQL Server and clean ...
 sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_Commerce_Project -E -i "C:\Users\Administrator\Desktop\Automation\SQL.sql"
 
 echo -----------------------------------
