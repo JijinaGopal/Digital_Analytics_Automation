@@ -3,6 +3,73 @@ USE E_Commerce_Project
 
 
 --------------------------------------------DATA CLEANING--------------------------------------------------------
+TRUNCATE TABLE orders;
+
+BULK INSERT orders
+FROM 'C:\Users\Administrator\Desktop\Automation\data\orders.csv'
+WITH (
+    FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR = '\n',
+    TABLOCK,
+    CODEPAGE = 'ACP'
+);
+
+
+TRUNCATE TABLE order_items;
+
+BULK INSERT orders
+FROM 'C:\Users\Administrator\Desktop\Automation\data\order_items.csv'
+WITH (
+    FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR = '\n',
+    TABLOCK,
+    CODEPAGE = 'ACP'
+);
+
+
+
+TRUNCATE TABLE order_item_refunds;
+
+BULK INSERT orders
+FROM 'C:\Users\Administrator\Desktop\Automation\data\order_item_refunds.csv'
+WITH (
+    FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR = '\n',
+    TABLOCK,
+    CODEPAGE = 'ACP'
+);
+
+
+TRUNCATE TABLE products;
+
+BULK INSERT orders
+FROM 'C:\Users\Administrator\Desktop\Automation\data\products.csv'
+WITH (
+    FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR = '\n',
+    TABLOCK,
+    CODEPAGE = 'ACP'
+);
+
+
+TRUNCATE TABLE website_pageviews;
+
+BULK INSERT orders
+FROM 'C:\Users\Administrator\Desktop\Automation\data\website_pageviews.csv'
+WITH (
+    FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR = '\n',
+    TABLOCK,
+    CODEPAGE = 'ACP'
+);
+
+
+
 -- Truncate and import website_sessions
 TRUNCATE TABLE website_sessions;
 BULK INSERT website_sessions
@@ -17,7 +84,6 @@ WITH (
 
 
 
-
 -- Drop the table if it already exists 
 IF OBJECT_ID('dbo.w_sessions', 'U') IS NOT NULL
     DROP TABLE dbo.w_sessions;
@@ -26,6 +92,28 @@ IF OBJECT_ID('dbo.w_sessions', 'U') IS NOT NULL
 SELECT *
 INTO dbo.w_sessions
 FROM dbo.website_sessions;
+
+---Delete null
+DELETE FROM orders
+WHERE order_id IS NULL
+or created_at IS NULL
+
+DELETE FROM order_items
+WHERE order_item_id IS NULL
+or created_at IS NULL
+
+DELETE FROM order_item_refunds
+WHERE order_item_refund_id IS NULL
+or created_at IS NULL
+
+DELETE FROM website_pageviews
+WHERE website_pageview_id IS NULL
+or created_at IS NULL
+
+
+DELETE FROM w_sessions
+WHERE website_session_id IS NULL
+or created_at IS NULL
 
 
 ---updating nulls with unknown
