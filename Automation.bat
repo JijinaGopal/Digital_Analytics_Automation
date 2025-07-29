@@ -4,7 +4,7 @@
 cd "C:\Users\Administrator\Desktop\Automation"
 
 
-sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_COMMERCE -E -i "C:\Users\Administrator\Desktop\Automation\SQL.sql"
+sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_Commerce_Project -E -i "C:\Users\Administrator\Desktop\Automation\SQL.sql"
 
 
 git add .
