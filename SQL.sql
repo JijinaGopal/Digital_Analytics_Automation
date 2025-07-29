@@ -23,7 +23,10 @@ IF OBJECT_ID('dbo.w_sessions', 'U') IS NOT NULL
     DROP TABLE dbo.w_sessions;
 
 
-select * from website_sessions into w_sessions
+SELECT *
+INTO dbo.w_sessions
+FROM dbo.website_sessions;
+
 
 ---updating nulls with unknown
 UPDATE w_sessions
