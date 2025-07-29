@@ -18,7 +18,7 @@ WITH (
 
 TRUNCATE TABLE order_items;
 
-BULK INSERT orders
+BULK INSERT order_items
 FROM 'C:\Users\Administrator\Desktop\Automation\data\order_items.csv'
 WITH (
     FIRSTROW = 2,
@@ -32,7 +32,7 @@ WITH (
 
 TRUNCATE TABLE order_item_refunds;
 
-BULK INSERT orders
+BULK INSERT order_item_refunds
 FROM 'C:\Users\Administrator\Desktop\Automation\data\order_item_refunds.csv'
 WITH (
     FIRSTROW = 2,
@@ -45,7 +45,7 @@ WITH (
 
 TRUNCATE TABLE products;
 
-BULK INSERT orders
+BULK INSERT products
 FROM 'C:\Users\Administrator\Desktop\Automation\data\products.csv'
 WITH (
     FIRSTROW = 2,
@@ -58,7 +58,7 @@ WITH (
 
 TRUNCATE TABLE website_pageviews;
 
-BULK INSERT orders
+BULK INSERT website_pageviews
 FROM 'C:\Users\Administrator\Desktop\Automation\data\website_pageviews.csv'
 WITH (
     FIRSTROW = 2,
