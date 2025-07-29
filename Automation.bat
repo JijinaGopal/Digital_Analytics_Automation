@@ -1,7 +1,7 @@
 @echo off
 
 echo STEP 1: Import website_sessions.csv into SQL Server and clean ...
-sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_Commerce_Project -E -i "C:\Users\Administrator\Desktop\Automation\full_import_and_clean.sql"
+sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_Commerce_Project -E -i "C:\Users\Administrator\Desktop\Automation\SQL.sql"
 
 
 echo STEP 2: Export cleaned w_sessions table to CSV...
