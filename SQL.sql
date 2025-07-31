@@ -66,7 +66,7 @@ ALTER TABLE website_pageviews ALTER COLUMN created_at DATETIME;
 
 -- ---------------------- 3. orders ----------------------
 TRUNCATE TABLE orders;
-ALTER TABLE orders ALTER COLUMN order_time VARCHAR(50);
+ALTER TABLE orders ALTER COLUMN created_at VARCHAR(50);
 
 BULK INSERT orders
 FROM 'C:\Users\Administrator\Desktop\Automation\data\orders.csv'
@@ -79,13 +79,13 @@ WITH (
 );
 
 DELETE FROM orders
-WHERE order_id IS NULL OR order_time IS NULL;
+WHERE order_id IS NULL OR created_at IS NULL;
 
 UPDATE orders
-SET order_time = NULL
-WHERE TRY_CONVERT(datetime, order_time) IS NULL;
+SET created_at = NULL
+WHERE TRY_CONVERT(datetime, created_at) IS NULL;
 
-ALTER TABLE orders ALTER COLUMN order_time DATETIME;
+ALTER TABLE orders ALTER COLUMN created_at DATETIME;
 
 
 -- ---------------------- 4. order_items ----------------------
