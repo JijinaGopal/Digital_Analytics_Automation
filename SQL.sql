@@ -4,9 +4,6 @@ USE E_Commerce_Project;
 ---clear table
 TRUNCATE TABLE website_sessions;
 
----change datatype to varchar
-ALTER TABLE website_sessions ALTER COLUMN created_at VARCHAR(50);
-
 ---insert the data
 BULK INSERT website_sessions
 FROM 'C:\Users\Administrator\Desktop\Automation\data\website_sessions.csv'
@@ -34,9 +31,6 @@ SET created_at = NULL
 WHERE TRY_CONVERT(datetime, created_at) IS NULL;
 
 
----change datatype to datetime
-ALTER TABLE website_sessions ALTER COLUMN created_at DATETIME;
-
 -- Clean other fields
 UPDATE website_sessions
 SET utm_source = ISNULL(utm_source, 'unknown'),
@@ -58,8 +52,6 @@ FROM website_sessions;
 ---clear table
 TRUNCATE TABLE website_pageviews;
 
----change datatype to varchar
-ALTER TABLE website_pageviews ALTER COLUMN created_at VARCHAR(50);
 
 ---insert the data
 BULK INSERT website_pageviews
@@ -78,22 +70,12 @@ WITH cte AS (
 )
 DELETE FROM cte WHERE rn > 1
 
--- Fix common NULLs or blanks before changing type
-UPDATE website_pageviews
-SET created_at = NULL
-WHERE TRY_CONVERT(datetime, created_at) IS NULL;
-
----change datatype to datetime
-ALTER TABLE website_pageviews ALTER COLUMN created_at DATETIME;
 
 
 -- ---------------------- 3. orders ----------------------
 ---clear table
 TRUNCATE TABLE orders;
 
----change datatype to varchar
-ALTER TABLE orders ALTER COLUMN created_at VARCHAR(50);
-ALTER TABLE orders ALTER COLUMN cogs_usd VARCHAR(50);
 
 ---insert the data
 BULK INSERT orders
@@ -111,7 +93,9 @@ ALTER TABLE orders
 ADD cogs_usd_decimal FLOAT;
 
 UPDATE orders
-SET cogs_usd_decimal = TRY_CAST(cogs_usd AS FLOAT);
+SET cogs_usd_decimal = 
+  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
+  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
 
 
 ---delete duplicates
@@ -133,22 +117,13 @@ IF EXISTS (
 )
     PRINT 'Invalid'
 
--- Fix common NULLs or blanks before changing type
-UPDATE orders
-SET created_at = NULL
-WHERE TRY_CONVERT(datetime, created_at) IS NULL;
 
----change datatype to datetime
-ALTER TABLE orders ALTER COLUMN created_at DATETIME;
 
 
 -- ---------------------- 4. order_items ----------------------
 ---remove the data
 TRUNCATE TABLE order_items;
 
----change datatype to varchar
-ALTER TABLE order_items ALTER COLUMN created_at VARCHAR(50)
-ALTER TABLE order_items ALTER COLUMN cogs_usd VARCHAR(50);
 
 ---Insert the data
 BULK INSERT order_items
@@ -160,13 +135,14 @@ WITH (
     TABLOCK
 );
 
-
-----Alter cogs column in orders items table
-ALTER TABLE order_items
+----Alter cogs column in orders table
+ALTER TABLE orders
 ADD cogs_usd_decimal FLOAT;
 
-UPDATE order_items
-SET cogs_usd_decimal = TRY_CAST(cogs_usd AS FLOAT);
+UPDATE orders
+SET cogs_usd_decimal = 
+  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
+  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
 
 
 
@@ -197,20 +173,11 @@ IF EXISTS (
 )
     PRINT 'Invalid'
 
--- Fix common NULLs or blanks before changing type
-UPDATE order_items
-SET created_at = NULL
-WHERE TRY_CONVERT(datetime, created_at) IS NULL;
 
----change datatype to datetime
-ALTER TABLE order_items ALTER COLUMN created_at DATETIME
 
 -- ---------------------- 5. order_item_refunds ----------------------
 ---remove the data
 TRUNCATE TABLE order_item_refunds;
-
----change datatype to varchar
-ALTER TABLE order_item_refunds ALTER COLUMN created_at VARCHAR(50)
 
 ---Insert the data
 BULK INSERT order_item_refunds
@@ -259,21 +226,10 @@ IF EXISTS (
 )
     PRINT 'Invalid'
 
--- Fix common NULLs or blanks before changing type
-UPDATE order_item_refunds
-SET created_at = NULL
-WHERE TRY_CONVERT(datetime, created_at) IS NULL;
-
----change datatype to datetime
-ALTER TABLE order_item_refunds ALTER COLUMN created_at DATETIME
-
 
 -- ---------------------- 6. products ----------------------
 ---remove the data
 TRUNCATE TABLE products;
-
----change datatype to varchar
-ALTER TABLE products ALTER COLUMN created_at VARCHAR(50)
 
 ---Insert the data
 BULK INSERT products
@@ -297,10 +253,3 @@ DELETE FROM cte WHERE rn > 1;
 ----replace null with others
 UPDATE products SET product_name = 'Other' WHERE product_name IN ('NULL', 'Unknown', '');
 
--- Fix common NULLs or blanks before changing type
-UPDATE products
-SET created_at = NULL
-WHERE TRY_CONVERT(datetime, created_at) IS NULL;
-
----change datatype to datetime
-ALTER TABLE products ALTER COLUMN created_at DATETIME
