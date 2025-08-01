@@ -25,12 +25,6 @@ WITH cte AS (
 )
 DELETE FROM cte WHERE rn > 1;
 
--- Fix common NULLs or blanks before changing type
-UPDATE website_sessions
-SET created_at = NULL
-WHERE TRY_CONVERT(datetime, created_at) IS NULL;
-
-
 -- Clean other fields
 UPDATE website_sessions
 SET utm_source = ISNULL(utm_source, 'unknown'),
