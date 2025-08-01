@@ -14,8 +14,7 @@ WITH (
     FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
-    TABLOCK,
-    CODEPAGE = 'ACP'
+    TABLOCK
 );
 
 ---delete duplicates
@@ -69,8 +68,7 @@ WITH (
     FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
-    TABLOCK,
-    CODEPAGE = 'ACP'
+    TABLOCK
 );
 
 ---delete duplicates
@@ -105,8 +103,7 @@ WITH (
     FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
-    TABLOCK,
-    CODEPAGE = 'ACP'
+    TABLOCK
 );
 
 
@@ -161,8 +158,7 @@ WITH (
     FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
-    TABLOCK,
-    CODEPAGE = 'ACP'
+    TABLOCK
 );
 
 
@@ -224,8 +220,7 @@ WITH (
     FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
-    TABLOCK,
-    CODEPAGE = 'ACP'
+    TABLOCK
 );
 
 
@@ -288,8 +283,7 @@ WITH (
     FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
-    TABLOCK,
-    CODEPAGE = 'ACP'
+    TABLOCK
 );
 
 
