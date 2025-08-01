@@ -112,15 +112,6 @@ WHERE TRY_CONVERT(datetime, created_at) IS NULL;
 ---change datatype to datetime
 ALTER TABLE orders ALTER COLUMN created_at DATETIME;
 
-----Alter cogs column in orders table
-ALTER TABLE orders
-ADD cogs_usd_decimal FLOAT;
-
-UPDATE orders
-SET cogs_usd_decimal = 
-  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
-  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
-
 
 ---delete duplicates
 WITH cte AS (
@@ -170,14 +161,6 @@ WHERE TRY_CONVERT(datetime, created_at) IS NULL;
 ---change datatype to datetime
 ALTER TABLE order_items ALTER COLUMN created_at DATETIME
 
-----Alter cogs column in orders table
-ALTER TABLE orders
-ADD cogs_usd_decimal FLOAT;
-
-UPDATE orders
-SET cogs_usd_decimal = 
-  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
-  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
 
 
 
