@@ -4,6 +4,9 @@ USE E_Commerce_Project;
 ---clear table
 TRUNCATE TABLE website_sessions;
 
+---change datatype to varchar
+ALTER TABLE website_sessions ALTER COLUMN created_at VARCHAR(50);
+
 ---insert the data
 BULK INSERT website_sessions
 FROM 'C:\Users\Administrator\Desktop\Automation\data\website_sessions.csv'
@@ -13,6 +16,9 @@ WITH (
     ROWTERMINATOR = '\n',
     TABLOCK
 );
+
+---change datatype to datetime
+ALTER TABLE website_sessions ALTER COLUMN created_at DATETIME;
 
 ---delete duplicates
 WITH cte AS (
@@ -46,6 +52,8 @@ FROM website_sessions;
 ---clear table
 TRUNCATE TABLE website_pageviews;
 
+---change datatype to varchar
+ALTER TABLE website_pageviews ALTER COLUMN created_at VARCHAR(50);
 
 ---insert the data
 BULK INSERT website_pageviews
@@ -56,6 +64,9 @@ WITH (
     ROWTERMINATOR = '\n',
     TABLOCK
 );
+
+---change datatype to datetime
+ALTER TABLE website_pageviews ALTER COLUMN created_at DATETIME;
 
 ---delete duplicates
 WITH cte AS (
@@ -70,6 +81,8 @@ DELETE FROM cte WHERE rn > 1
 ---clear table
 TRUNCATE TABLE orders;
 
+---change datatype to varchar
+ALTER TABLE orders ALTER COLUMN created_at VARCHAR(50);
 
 ---insert the data
 BULK INSERT orders
@@ -81,6 +94,8 @@ WITH (
     TABLOCK
 );
 
+---change datatype to datetime
+ALTER TABLE orders ALTER COLUMN created_at DATETIME;
 
 ----Alter cogs column in orders table
 ALTER TABLE orders
@@ -118,6 +133,8 @@ IF EXISTS (
 ---remove the data
 TRUNCATE TABLE order_items;
 
+---change datatype to varchar
+ALTER TABLE order_items ALTER COLUMN created_at VARCHAR(50)
 
 ---Insert the data
 BULK INSERT order_items
@@ -128,6 +145,8 @@ WITH (
     ROWTERMINATOR = '\n',
     TABLOCK
 );
+---change datatype to datetime
+ALTER TABLE order_items ALTER COLUMN created_at DATETIME
 
 ----Alter cogs column in orders table
 ALTER TABLE orders
@@ -173,6 +192,9 @@ IF EXISTS (
 ---remove the data
 TRUNCATE TABLE order_item_refunds;
 
+---change datatype to varchar
+ALTER TABLE order_item_refunds ALTER COLUMN created_at VARCHAR(50)
+
 ---Insert the data
 BULK INSERT order_item_refunds
 FROM 'C:\Users\Administrator\Desktop\Automation\data\order_item_refunds.csv'
@@ -182,6 +204,9 @@ WITH (
     ROWTERMINATOR = '\n',
     TABLOCK
 );
+
+---change datatype to datetime
+ALTER TABLE order_item_refunds ALTER COLUMN created_at DATETIME
 
 
 ---Delete duplicates
@@ -225,6 +250,9 @@ IF EXISTS (
 ---remove the data
 TRUNCATE TABLE products;
 
+---change datatype to varchar
+ALTER TABLE products ALTER COLUMN created_at VARCHAR(50)
+
 ---Insert the data
 BULK INSERT products
 FROM 'C:\Users\Administrator\Desktop\Automation\data\products.csv'
@@ -234,6 +262,9 @@ WITH (
     ROWTERMINATOR = '\n',
     TABLOCK
 );
+
+---change datatype to datetime
+ALTER TABLE products ALTER COLUMN created_at DATETIME
 
 
 ---Delete duplicates
