@@ -70,6 +70,11 @@ WITH (
     TABLOCK
 );
 
+-- Fix common NULLs or blanks before changing type
+UPDATE website_pageviews
+SET created_at = NULL
+WHERE TRY_CONVERT(datetime, created_at) IS NULL;
+
 ---change datatype to datetime
 ALTER TABLE website_pageviews ALTER COLUMN created_at DATETIME;
 
@@ -98,6 +103,11 @@ WITH (
     ROWTERMINATOR = '\n',
     TABLOCK
 );
+
+-- Fix common NULLs or blanks before changing type
+UPDATE orders
+SET created_at = NULL
+WHERE TRY_CONVERT(datetime, created_at) IS NULL;
 
 ---change datatype to datetime
 ALTER TABLE orders ALTER COLUMN created_at DATETIME;
@@ -150,6 +160,13 @@ WITH (
     ROWTERMINATOR = '\n',
     TABLOCK
 );
+
+-- Fix common NULLs or blanks before changing type
+UPDATE order_items
+SET created_at = NULL
+WHERE TRY_CONVERT(datetime, created_at) IS NULL;
+
+
 ---change datatype to datetime
 ALTER TABLE order_items ALTER COLUMN created_at DATETIME
 
@@ -210,6 +227,14 @@ WITH (
     TABLOCK
 );
 
+-- Fix common NULLs or blanks before changing type
+UPDATE order_item_refunds
+SET created_at = NULL
+WHERE TRY_CONVERT(datetime, created_at) IS NULL;
+
+
+
+
 ---change datatype to datetime
 ALTER TABLE order_item_refunds ALTER COLUMN created_at DATETIME
 
@@ -267,6 +292,12 @@ WITH (
     ROWTERMINATOR = '\n',
     TABLOCK
 );
+
+
+-- Fix common NULLs or blanks before changing type
+UPDATE products
+SET created_at = NULL
+WHERE TRY_CONVERT(datetime, created_at) IS NULL;
 
 ---change datatype to datetime
 ALTER TABLE products ALTER COLUMN created_at DATETIME
