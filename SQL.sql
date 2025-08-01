@@ -72,7 +72,7 @@ SELECT
     price_usd,
     TRY_CONVERT(FLOAT, cogs_usd)
 FROM orders_staging
-WHERE TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL;
+WHERE TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL
 AND TRY_CONVERT(FLOAT, cogs_usd) IS NOT NULL;
 
 
