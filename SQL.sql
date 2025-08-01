@@ -97,9 +97,14 @@ TRUNCATE TABLE orders;
 ALTER TABLE orders ALTER COLUMN created_at VARCHAR(50);
 
 
----change datatype to decimal
+----Alter cogs column in orders table
 ALTER TABLE orders
-ALTER COLUMN cogs_usd DECIMAL(10, 2);
+ADD cogs_usd_decimal FLOAT;
+
+UPDATE orders
+SET cogs_usd_decimal = 
+  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
+  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
 
 ---insert the data
 BULK INSERT orders
@@ -121,7 +126,7 @@ DELETE FROM cte WHERE rn > 1
 
 ---Invalid price/cost in orders
 IF EXISTS (
-    SELECT 1 FROM orders WHERE price_usd <= 0 OR cogs_usd <= 0
+    SELECT 1 FROM orders WHERE price_usd <= 0 OR cogs_usd_decimal <= 0
 )
     PRINT 'Invalid'
 
@@ -147,10 +152,14 @@ TRUNCATE TABLE order_items;
 ---change datatype to varchar
 ALTER TABLE order_items ALTER COLUMN created_at VARCHAR(50)
 
----change datatype to decimal
+----Alter cogs column in orders items table
 ALTER TABLE order_items
-ALTER COLUMN cogs_usd DECIMAL(10, 2);
+ADD cogs_usd_decimal FLOAT;
 
+UPDATE order_items
+SET cogs_usd_decimal = 
+  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
+  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
 
 ---Insert the data
 BULK INSERT order_items
@@ -178,7 +187,7 @@ UPDATE order_items SET cogs_usd = 0 WHERE cogs_usd IS NULL
 
 ---Invalid price/cost in order_items
 IF EXISTS (
-   SELECT 1 FROM order_items WHERE price_usd <= 0 OR cogs_usd <= 0
+   SELECT 1 FROM order_items WHERE price_usd <= 0 OR cogs_usd_decimal <= 0
 )
    PRINT 'Invalid'
 
