@@ -97,14 +97,6 @@ TRUNCATE TABLE orders;
 ALTER TABLE orders ALTER COLUMN created_at VARCHAR(50);
 
 
-----Alter cogs column in orders table
-ALTER TABLE orders
-ADD cogs_usd_decimal FLOAT;
-
-UPDATE orders
-SET cogs_usd_decimal = 
-  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
-  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
 
 ---insert the data
 BULK INSERT orders
@@ -116,6 +108,16 @@ WITH (
     TABLOCK,
     CODEPAGE = 'ACP'
 );
+
+
+----Alter cogs column in orders table
+ALTER TABLE orders
+ADD cogs_usd_decimal FLOAT;
+
+UPDATE orders
+SET cogs_usd_decimal = 
+  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
+  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
 
 ---delete duplicates
 WITH cte AS (
@@ -152,15 +154,6 @@ TRUNCATE TABLE order_items;
 ---change datatype to varchar
 ALTER TABLE order_items ALTER COLUMN created_at VARCHAR(50)
 
-----Alter cogs column in orders items table
-ALTER TABLE order_items
-ADD cogs_usd_decimal FLOAT;
-
-UPDATE order_items
-SET cogs_usd_decimal = 
-  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
-  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
-
 ---Insert the data
 BULK INSERT order_items
 FROM 'C:\Users\Administrator\Desktop\Automation\data\order_items.csv'
@@ -171,6 +164,16 @@ WITH (
     TABLOCK,
     CODEPAGE = 'ACP'
 );
+
+
+----Alter cogs column in orders items table
+ALTER TABLE order_items
+ADD cogs_usd_decimal FLOAT;
+
+UPDATE order_items
+SET cogs_usd_decimal = 
+  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
+  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
 
 ---Delete duplicates
 WITH cte AS (
