@@ -96,6 +96,11 @@ TRUNCATE TABLE orders;
 ---change datatype to varchar
 ALTER TABLE orders ALTER COLUMN created_at VARCHAR(50);
 
+
+---change datatype to decimal
+ALTER TABLE orders
+ALTER COLUMN cogs_usd DECIMAL(10, 2);
+
 ---insert the data
 BULK INSERT orders
 FROM 'C:\Users\Administrator\Desktop\Automation\data\orders.csv'
@@ -142,6 +147,11 @@ TRUNCATE TABLE order_items;
 ---change datatype to varchar
 ALTER TABLE order_items ALTER COLUMN created_at VARCHAR(50)
 
+---change datatype to decimal
+ALTER TABLE order_items
+ALTER COLUMN cogs_usd DECIMAL(10, 2);
+
+
 ---Insert the data
 BULK INSERT order_items
 FROM 'C:\Users\Administrator\Desktop\Automation\data\order_items.csv'
@@ -168,9 +178,9 @@ UPDATE order_items SET cogs_usd = 0 WHERE cogs_usd IS NULL
 
 ---Invalid price/cost in order_items
 IF EXISTS (
-    SELECT 1 FROM order_items WHERE price_usd <= 0 OR cogs_usd <= 0
+   SELECT 1 FROM order_items WHERE price_usd <= 0 OR cogs_usd <= 0
 )
-    PRINT 'Invalid'
+   PRINT 'Invalid'
 
 
 ---Orphan order_id in order_items
