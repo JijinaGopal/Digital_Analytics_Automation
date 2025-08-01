@@ -519,9 +519,6 @@ IF EXISTS (
 )
     PRINT 'Issue Found: Pageviews with missing session IDs';
 
--- clear the table
-TRUNCATE TABLE w_sessions;
 
--- Copy cleaned data to w_sessions
-INSERT INTO w_sessions
+
 
