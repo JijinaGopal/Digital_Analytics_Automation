@@ -111,9 +111,8 @@ ALTER TABLE orders
 ADD cogs_usd_decimal FLOAT;
 
 UPDATE orders
-SET cogs_usd_decimal = 
-  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
-  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
+SET cogs_usd_decimal = TRY_CAST(cogs_usd AS FLOAT);
+
 
 ---delete duplicates
 WITH cte AS (
@@ -167,9 +166,9 @@ ALTER TABLE order_items
 ADD cogs_usd_decimal FLOAT;
 
 UPDATE order_items
-SET cogs_usd_decimal = 
-  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
-  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0;
+SET cogs_usd_decimal = TRY_CAST(cogs_usd AS FLOAT);
+
+
 
 ---Delete duplicates
 WITH cte AS (
