@@ -210,7 +210,7 @@ ALTER TABLE order_item_refunds ALTER COLUMN created_at DATETIME
 
 
 ---Delete duplicates
-WITH cte AS (
+;WITH cte AS (
   SELECT *, ROW_NUMBER() OVER (PARTITION BY order_item_refund_id, created_at, order_item_id, order_id, refund_amount_usd ORDER BY (SELECT NULL)) AS rn
   FROM order_item_refunds
 )
@@ -268,7 +268,7 @@ ALTER TABLE products ALTER COLUMN created_at DATETIME
 
 
 ---Delete duplicates
-WITH cte AS (
+;WITH cte AS (
   SELECT *, ROW_NUMBER() OVER (PARTITION BY product_id, created_at, product_name ORDER BY (SELECT NULL)) AS rn
   FROM products
 )
