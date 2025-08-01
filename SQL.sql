@@ -8,7 +8,6 @@ TRUNCATE TABLE products;
 TRUNCATE TABLE website_sessions;
 TRUNCATE TABLE website_pageviews;
 
-EXEC sp_help 'order_items';
 
 ------------------------------------------------------ DATA LOAD ------------------------
 -- 1. Drop existing tables if they exist
@@ -17,14 +16,16 @@ DROP TABLE IF EXISTS orders_staging;
 -- 2. Create staging table for raw CSV data
 CREATE TABLE orders_staging (
     order_id INT,
-    created_at VARCHAR(50),
+    created_at varchar(50),
     website_session_id INT,
     user_id INT,
     primary_product_id INT,
     items_purchased INT,
     price_usd FLOAT,
-    cogs_usd VARCHAR(50)
+    cogs_usd Float
 );
+
+
 
 -- 3. Bulk insert into staging table
 BULK INSERT orders_staging
@@ -36,6 +37,10 @@ WITH (
     CODEPAGE = '65001',
     TABLOCK
 );
+
+EXEC sp_help 'orders_staging';
+
+select * from orders_staging
 
 -- 4. Create final clean table
 DROP TABLE IF EXISTS orders;
@@ -51,6 +56,8 @@ CREATE TABLE orders (
     cogs_usd FLOAT
 );
 
+EXEC sp_help 'orders';
+
 -- 5. Insert clean records from staging to final table
 INSERT INTO orders (
     order_id,
@@ -64,33 +71,36 @@ INSERT INTO orders (
 )
 SELECT
     order_id,
-    TRY_CONVERT(DATETIME, created_at, 105),
+    TRY_CONVERT(DATETIME, REPLACE(created_at, '"', ''), 120) AS created_at,
     website_session_id,
     user_id,
     primary_product_id,
     items_purchased,
     price_usd,
-    TRY_CONVERT(FLOAT, cogs_usd)
-FROM orders_staging
-WHERE TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL
-AND TRY_CONVERT(FLOAT, cogs_usd) IS NOT NULL;
+    cogs_usd
+	FROM orders_staging
 
+
+
+
+select * from orders
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Drop if exists
 DROP TABLE IF EXISTS order_items_staging;
 
--- 1. Staging table - VARCHARs where needed
+-- 1. Staging table
 CREATE TABLE order_items_staging (
     order_item_id VARCHAR(50),
     created_at VARCHAR(50),
-    order_id VARCHAR(50),
-    product_id VARCHAR(50),
-    is_primary_item VARCHAR(50),
-    price_usd VARCHAR(50),
-    cogs_usd VARCHAR(50)
+    order_id INT,
+    product_id INT,
+    is_primary_item INT,
+    price_usd FLOAT,
+    cogs_usd FLOAT
 );
+
 
 -- 2. Load from CSV
 BULK INSERT order_items_staging
@@ -111,12 +121,12 @@ CREATE TABLE order_items (
     created_at DATETIME,
     order_id INT,
     product_id INT,
-    is_primary_item BIT,
+    is_primary_item INT,
     price_usd FLOAT,
     cogs_usd FLOAT
 );
 
--- 4. Insert clean data (filtering bad values)
+-- 4. Insert clean data 
 INSERT INTO order_items (
     order_item_id,
     created_at,
@@ -127,41 +137,27 @@ INSERT INTO order_items (
     cogs_usd
 )
 SELECT
-    TRY_CAST(order_item_id AS INT),
-    TRY_CONVERT(DATETIME, 
-        CASE 
-            WHEN LEN(LTRIM(RTRIM(created_at))) = 16 THEN LTRIM(RTRIM(created_at)) + ':00'
-            ELSE LTRIM(RTRIM(created_at))
-        END, 105),
-    TRY_CAST(order_id AS INT),
-    TRY_CAST(product_id AS INT),
-    TRY_CAST(is_primary_item AS BIT),
-    TRY_CAST(REPLACE(LTRIM(RTRIM(price_usd)), ',', '.') AS FLOAT),
-    TRY_CAST(REPLACE(LTRIM(RTRIM(cogs_usd)), ',', '.') AS FLOAT)
+    order_item_id,
+    TRY_CONVERT(DATETIME, REPLACE(created_at, '"', ''), 120) AS created_at,
+    order_id,
+    product_id,
+    is_primary_item,
+    price_usd,
+    cogs_usd
 FROM order_items_staging
-WHERE 
-    TRY_CAST(order_item_id AS INT) IS NOT NULL AND
-    TRY_CAST(order_id AS INT) IS NOT NULL AND
-    TRY_CAST(product_id AS INT) IS NOT NULL AND
-    TRY_CAST(is_primary_item AS BIT) IS NOT NULL AND
-    TRY_CAST(REPLACE(LTRIM(RTRIM(price_usd)), ',', '.') AS FLOAT) IS NOT NULL AND
-    TRY_CAST(REPLACE(LTRIM(RTRIM(cogs_usd)), ',', '.') AS FLOAT) IS NOT NULL;
-
-
-SELECT * from order_items 
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- 1. Drop staging table if exists
 DROP TABLE IF EXISTS order_item_refunds_staging;
 
--- 2. Create staging table (load raw text data)
+-- 2. Create staging table 
 CREATE TABLE order_item_refunds_staging (
-    order_item_refund_id VARCHAR(50),
+    order_item_refund_id INT,
     created_at VARCHAR(50),
-    order_item_id VARCHAR(50),
-    order_id VARCHAR(50),
-    refund_amount_usd VARCHAR(50)
+    order_item_id INT,
+    order_id INT,
+    refund_amount_usd FLOAT
 );
 
 -- 3. Bulk insert from CSV
@@ -197,30 +193,13 @@ INSERT INTO order_item_refunds (
     refund_amount_usd
 )
 SELECT
-    TRY_CAST(order_item_refund_id AS INT),
-    TRY_CONVERT(DATETIME, 
-        CASE 
-            WHEN LEN(LTRIM(RTRIM(created_at))) = 16 THEN LTRIM(RTRIM(created_at)) + ':00'
-            ELSE LTRIM(RTRIM(created_at))
-        END, 105),
-    TRY_CAST(order_item_id AS INT),
-    TRY_CAST(order_id AS INT),
-    TRY_CAST(REPLACE(LTRIM(RTRIM(refund_amount_usd)), ',', '.') AS FLOAT)
+    order_item_refund_id ,
+    TRY_CONVERT(DATETIME, REPLACE(created_at, '"', ''), 120) AS created_at,
+    order_item_id,
+    order_id ,
+    refund_amount_usd
 FROM order_item_refunds_staging
-WHERE 
-    TRY_CAST(order_item_refund_id AS INT) IS NOT NULL AND
-    TRY_CAST(order_item_id AS INT) IS NOT NULL AND
-    TRY_CAST(order_id AS INT) IS NOT NULL AND
-    TRY_CONVERT(DATETIME, 
-        CASE 
-            WHEN LEN(LTRIM(RTRIM(created_at))) = 16 THEN LTRIM(RTRIM(created_at)) + ':00'
-            ELSE LTRIM(RTRIM(created_at))
-        END, 105) IS NOT NULL AND
-    TRY_CAST(REPLACE(LTRIM(RTRIM(refund_amount_usd)), ',', '.') AS FLOAT) IS NOT NULL;
 
--- 7. Check records
-SELECT COUNT(*) FROM order_item_refunds;
-SELECT TOP 10 * FROM order_item_refunds;
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 -- 1. Drop if exists
@@ -228,7 +207,7 @@ DROP TABLE IF EXISTS products_staging;
 
 -- 2. Create staging table
 CREATE TABLE products_staging (
-    product_id VARCHAR(50),
+    product_id INT,
     created_at VARCHAR(50),
     product_name VARCHAR(255)
 );
@@ -262,17 +241,11 @@ INSERT INTO products (
     product_name
 )
 SELECT
-    TRY_CAST(product_id AS INT),
-    TRY_CONVERT(DATETIME, created_at, 105),
+    product_id,
+    TRY_CONVERT(DATETIME, REPLACE(created_at, '"', ''), 120) AS created_at,
     product_name
 FROM products_staging
-WHERE
-    TRY_CAST(product_id AS INT) IS NOT NULL AND
-    TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL;
 
--- 7. Check
-SELECT COUNT(*) FROM products;
-SELECT TOP 10 * FROM products;
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
@@ -281,10 +254,10 @@ DROP TABLE IF EXISTS website_sessions_staging;
 
 -- 2. Create staging table
 CREATE TABLE website_sessions_staging (
-    website_session_id VARCHAR(50),
+    website_session_id INT,
     created_at VARCHAR(50),
-    user_id VARCHAR(50),
-    is_repeat_session VARCHAR(10),
+    user_id INT,
+    is_repeat_session INT,
     utm_source VARCHAR(255),
     utm_campaign VARCHAR(255),
     utm_content VARCHAR(255),
@@ -312,7 +285,7 @@ CREATE TABLE website_sessions (
     website_session_id INT,
     created_at DATETIME,
     user_id INT,
-    is_repeat_session BIT,
+    is_repeat_session INT,
     utm_source VARCHAR(255),
     utm_campaign VARCHAR(255),
     utm_content VARCHAR(255),
@@ -333,27 +306,16 @@ INSERT INTO website_sessions (
     http_referer
 )
 SELECT
-    TRY_CAST(website_session_id AS INT),
-    TRY_CONVERT(DATETIME, created_at, 105),
-    TRY_CAST(user_id AS INT),
-    CASE 
-        WHEN LOWER(is_repeat_session) IN ('1', 'true', 'yes') THEN 1
-        ELSE 0
-    END,
+    website_session_id ,
+    TRY_CONVERT(DATETIME, REPLACE(created_at, '"', ''), 120) AS created_at,
+    user_id,
+    is_repeat_session,
     utm_source,
     utm_campaign,
     utm_content,
     device_type,
     http_referer
 FROM website_sessions_staging
-WHERE 
-    TRY_CAST(website_session_id AS INT) IS NOT NULL AND
-    TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL;
-
--- 7. Sanity check
-SELECT COUNT(*) AS row_count FROM website_sessions;
-SELECT TOP 10 * FROM website_sessions;
-
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -362,9 +324,9 @@ DROP TABLE IF EXISTS website_pageviews_staging;
 
 -- 2. Create staging table (temporary raw load)
 CREATE TABLE website_pageviews_staging (
-    website_pageview_id VARCHAR(50),
+    website_pageview_id INT,
     created_at VARCHAR(50),
-    website_session_id VARCHAR(50),
+    website_session_id INT,
     pageview_url VARCHAR(255)
 );
 
@@ -399,9 +361,9 @@ INSERT INTO website_pageviews (
     pageview_url
 )
 SELECT
-    TRY_CAST(website_pageview_id AS INT),
-    TRY_CONVERT(DATETIME, created_at, 105),
-    TRY_CAST(website_session_id AS INT),
+    website_pageview_id,
+    TRY_CONVERT(DATETIME, REPLACE(created_at, '"', ''), 120) AS created_at,
+    website_session_id,
     pageview_url
 FROM website_pageviews_staging
 WHERE
@@ -409,8 +371,6 @@ WHERE
     TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL;
 
 SELECT * FROM website_pageviews;
-
-
 
 --- Checking and deleting duplicate values for each table
 
@@ -484,7 +444,6 @@ UPDATE products SET product_name = 'Other' WHERE LTRIM(RTRIM(product_name)) IS N
 UPDATE website_pageviews SET pageview_url = 'Other' WHERE LTRIM(RTRIM(pageview_url)) IS NULL OR pageview_url IN ('NULL', 'Unknown', '');
 
 -- Text: Orders
--- Replacing NULLs for foreign key `primary_product_id` with -1 (since it's tinyint)
 UPDATE orders SET primary_product_id = 0 WHERE primary_product_id IS NULL;
 
 -- Replace NULLs in numeric columns
@@ -499,26 +458,6 @@ UPDATE order_items SET cogs_usd = 0 WHERE cogs_usd IS NULL;
 
 
 UPDATE order_item_refunds SET refund_amount_usd = 0 WHERE refund_amount_usd IS NULL;
-
--- ===================================
--- 4. UTM Source Enrichment
--- ===================================
-
--- Correct parenthesis for ORs
-UPDATE website_sessions
-SET utm_source = 
-  CASE 
-    WHEN http_referer LIKE '%gsearch.com%' THEN 'gsearch'
-    WHEN http_referer LIKE '%bsearch.com%' THEN 'bsearch'
-    WHEN http_referer LIKE '%socialbook.com%' THEN 'socialbook'
-    ELSE utm_source
-  END
-WHERE utm_source = 'Other'
-  AND (
-    http_referer LIKE '%gsearch.com%'
-    OR http_referer LIKE '%bsearch.com%'
-    OR http_referer LIKE '%socialbook.com%'
-  );
 
 
   -- 1. Invalid price/cost in orders
