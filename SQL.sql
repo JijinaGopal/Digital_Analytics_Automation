@@ -38,9 +38,7 @@ WITH (
     TABLOCK
 );
 
-EXEC sp_help 'orders_staging';
 
-select * from orders_staging
 
 -- 4. Create final clean table
 DROP TABLE IF EXISTS orders;
@@ -56,7 +54,7 @@ CREATE TABLE orders (
     cogs_usd FLOAT
 );
 
-EXEC sp_help 'orders';
+
 
 -- 5. Insert clean records from staging to final table
 INSERT INTO orders (
@@ -80,10 +78,6 @@ SELECT
     cogs_usd
 	FROM orders_staging
 
-
-
-
-select * from orders
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -370,9 +364,6 @@ WHERE
     TRY_CAST(website_pageview_id AS INT) IS NOT NULL AND
     TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL;
 
-SELECT * FROM website_pageviews;
-
---- Checking and deleting duplicate values for each table
 
 -- ===================================
 -- 2. REMOVE DUPLICATES FROM EACH TABLE
@@ -533,7 +524,4 @@ TRUNCATE TABLE w_sessions;
 
 -- Copy cleaned data to w_sessions
 INSERT INTO w_sessions
-SELECT *
-FROM website_sessions;
-
 

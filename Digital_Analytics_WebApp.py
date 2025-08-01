@@ -26,26 +26,29 @@ def load_all_data():
     order_item_refunds = load_csv("order_item_refunds.csv")
     products = load_csv("products.csv")
     website_pageviews = load_csv("website_pageviews.csv")
-    w_sessions = load_csv("w_sessions.csv")
+    website_sessions = load_csv("website_sessions.csv")
     website_sessions=load_csv("website_sessions.csv")
     
 
-    return orders, order_items, order_item_refunds, products, website_pageviews, w_sessions,website_sessions
+    return orders, order_items, order_item_refunds, products, website_pageviews, website_sessions,website_sessions
 
 # load Data
-orders, order_items, order_item_refunds, products, website_pageviews, w_sessions,website_sessions = load_all_data()
+orders, order_items, order_item_refunds, products, website_pageviews, website_sessions,website_sessions = load_all_data()
 
 orders["created_at"] = pd.to_datetime(orders["created_at"], errors="coerce")
 order_items["created_at"] = pd.to_datetime(order_items["created_at"], errors="coerce")
 order_item_refunds["created_at"] = pd.to_datetime(order_item_refunds["created_at"], errors="coerce")
 products["created_at"] = pd.to_datetime(products["created_at"], errors="coerce")
 website_pageviews["created_at"] = pd.to_datetime(website_pageviews["created_at"], errors="coerce")
-w_sessions["created_at"] = pd.to_datetime(w_sessions["created_at"], errors="coerce")
+website_sessions['created_at'] = pd.to_datetime(website_pageviews['created_at'], errors="coerce")
 website_sessions["created_at"] = pd.to_datetime(website_sessions["created_at"], errors="coerce")
 
 
+
+
+
 # Store data with original names (no renaming in session_state)
-st.session_state.w_sessions = w_sessions
+st.session_state.website_sessions = website_sessions
 st.session_state.website_pageviews = website_pageviews
 st.session_state.orders = orders
 st.session_state.order_items = order_items
@@ -140,9 +143,10 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
 
         # merge with refund
         filtered_data = filtered_data.merge(order_item_refunds, how="left", on="order_item_id",suffixes=("","_refunds"))
-
-        # merge with w_sessions
-        filtered_data = filtered_data.merge(w_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
+        
+        # merge with website_sessions
+        filtered_data = filtered_data.merge(website_sessions,how="left",left_on="website_session_id",right_on='website_session_id',suffixes=("","_sessions"))
+        
 
         # Extract Year for filtering
         filtered_data["year"] = filtered_data["created_at_orderitem"].dt.year
@@ -210,19 +214,19 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         Refund_Amount_rate =(((final_df['price_usd_orderitem'].sum()) -((final_df['price_usd_orderitem'].sum() - final_df['refund_amount_usd'].sum()))) /
                                             (final_df['price_usd_orderitem'].sum() - final_df['refund_amount_usd'].sum())*100)
         Total_buyers=final_df['user_id'].nunique()
-        Total_users=w_sessions['user_id'].nunique()
+        Total_users=website_sessions['user_id'].nunique()
         Total_Quantity =final_df['items_purchased'].count()
-        Total_sessions = w_sessions['website_session_id'].nunique()
-        Repeat_sessions = w_sessions['is_repeat_session'].sum()
+        Total_sessions = website_sessions['website_session_id'].nunique()
+        Repeat_sessions = website_sessions['is_repeat_session'].sum()
         conversion_rate = (Total_orders / Total_sessions * 100) 
-        repeat_rate = ((final_df['is_repeat_session'].sum()) / (w_sessions['website_session_id'].nunique())* 100)
-        avg_revenue_per_session = (final_df['price_usd_orderitem'].sum()) / (w_sessions['website_session_id'].nunique()) 
-        avg_order_value = (final_df['price_usd_orderitem'].sum()) / (final_df['order_id'].nunique()) 
-        session_page_counts = website_pageviews[['website_session_id' ,'website_pageview_id']].groupby('website_session_id').count().reset_index()
+        repeat_rate = ((final_df['is_repeat_session'].sum()) / (website_sessions['website_session_id'].nunique())* 100)
+        avg_revenue_per_session = (final_df['price_usd_orderitem'].sum()) / (website_sessions['website_session_id'].nunique()) 
+        avg_order_value = (final_df['price_usd_orderitem'].sum()) / (final_df['order_id'].nunique())
+        session_page_counts = website_pageviews[['website_session_id' ,'website_pageview_id']].groupby('website_session_id').count().reset_index() 
         bounce_sessions = session_page_counts[session_page_counts['website_pageview_id'] == 1]
         bounce_rate = len(bounce_sessions) / len(session_page_counts) * 100
         avg_items_per_order=(final_df['items_purchased'].count())/(final_df['order_id'].nunique())
-        avg_session_per_user=( w_sessions['website_session_id'].nunique())/(w_sessions['user_id'].nunique())
+        avg_session_per_user=(website_sessions['website_session_id'].nunique())/(website_sessions['user_id'].nunique())
         Total_products=final_df['product_name'].nunique()
         Average_revenue_per_buyer=(final_df['price_usd_orderitem'].sum()- final_df['refund_amount_usd'].sum())/(final_df['user_id'].nunique())
         Average_profit_per_buyer=(((final_df['price_usd_orderitem'].sum() - final_df['refund_amount_usd'].sum()) - final_df[final_df['order_item_refund_id'].isna()]['cogs_usd_orderitem'].sum()))/(final_df['user_id'].nunique())
@@ -278,8 +282,8 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         # Start with order_items
         filtered_data_2 = website_pageviews.copy()
 
-        # merge with w_sessions
-        filtered_data_2 = filtered_data_2.merge(w_sessions, how="left", on="website_session_id",suffixes=("_webpage", "_website"))
+        # merge with website_sessions
+        filtered_data_2 = filtered_data_2.merge(website_sessions, how="left", on='website_session_id',suffixes=("_webpage", "_website"))
 
         # Extract Year for filtering
         filtered_data_2["year"] = filtered_data_2["created_at_webpage"].dt.year
@@ -487,79 +491,6 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
 
 
 
-        st.markdown("---")
-        st.markdown("### 🎯 Website Funnel Analysis")
-
-
-        final_df_2['pageview_url'] = final_df_2['pageview_url'].str.strip().str.lower()
-
-        # Create binary flags for each funnel step per session
-        funnel_flags = website_pageviews.pivot_table(index='website_session_id',columns='pageview_url',values='website_pageview_id',
-                                                    aggfunc='count',fill_value=0).reset_index()
-
-        # Rename known funnel steps (customize URLs as needed)
-        funnel_flags['visited_landing'] = ((funnel_flags.get('/home', 0) > 0) |(funnel_flags.get('/lander-1', 0) > 0) |
-                                           (funnel_flags.get('/lander-2', 0) > 0) |(funnel_flags.get('/lander-3', 0) > 0) |
-                                           (funnel_flags.get('/lander-4', 0) > 0) |(funnel_flags.get('/lander-5', 0) > 0))
-
-        funnel_flags['visited_product'] = ((funnel_flags.get('/products', 0) > 0) |
-                                           (funnel_flags.get('/the-original-mr-fuzzy', 0) > 0) |
-                                           (funnel_flags.get('/the-forever-love-bear', 0) > 0) |
-                                           (funnel_flags.get('/the-birthday-sugar-panda', 0) > 0) |
-                                           (funnel_flags.get('/the-hudson-river-mini-bear', 0) > 0))
-
-        funnel_flags['visited_cart'] = funnel_flags.get('/cart', 0) > 0
-
-        funnel_flags['visited_billing'] = ((funnel_flags.get('/billing', 0) > 0) |(funnel_flags.get('/billing-2', 0) > 0))
-
-        funnel_flags['visited_shipping'] = funnel_flags.get('/shipping', 0) > 0
-
-        funnel_flags['visited_order'] = funnel_flags.get('/thank-you-for-your-order', 0) > 0
-
-        # Everyone in this table is considered as having started a session (landing)
-        funnel_flags['visited_landing'] = True
-
-        #Count sessions at each step
-        funnel_counts = {
-                        'Landing': funnel_flags['visited_landing'].sum(),
-                        'Product': funnel_flags['visited_product'].sum(),
-                        'Cart': funnel_flags['visited_cart'].sum(),
-                        'Shipping': funnel_flags['visited_shipping'].sum(),
-                        'Billing': funnel_flags['visited_billing'].sum(),
-                        'Order': funnel_flags['visited_order'].sum()
-                        }
-
-        #Create funnel DataFrame with drop-off and conversion rate
-        funnel_df = pd.DataFrame(list(funnel_counts.items()), columns=['Step', 'Sessions'])
-        funnel_df['Dropoff'] = funnel_df['Sessions'].shift(1) - funnel_df['Sessions']
-        funnel_df['Conversion_Rate (%)'] = (funnel_df['Sessions'] / funnel_df['Sessions'].shift(1) * 100).round(2)
-        funnel_df.fillna({'Dropoff': 0, 'Conversion_Rate (%)': 100}, inplace=True)
-        funnel_df['Dropoff_Rate (%)'] = (funnel_df['Dropoff'] / funnel_df['Sessions'].shift(1) * 100).round(2)
-        funnel_df['Dropoff_Rate (%)'] = funnel_df['Dropoff_Rate (%)'].fillna(0)
-
-        st.dataframe(funnel_df)
-
-
-        fig, ax = plt.subplots(figsize=(10, 6))
-        colors = sns.color_palette("Oranges", n_colors=len(funnel_df))
-        bars = ax.bar(funnel_df['Step'], funnel_df['Sessions'], color=colors)
-
-        # Annotate sessions and dropoff % on each bar
-        for i, (session_count, dropoff_pct) in enumerate(zip(funnel_df['Sessions'], funnel_df['Dropoff_Rate (%)'])):
-            # Session count above
-            ax.text(i, session_count + (0.01 * session_count), f'{int(session_count)}',ha='center', fontsize=10, fontweight='bold')
-            # Dropoff % below (from step 2 onward)
-            if i > 0:
-                ax.text(i, session_count / 2, f'-{dropoff_pct}%',ha='center', va='center', fontsize=9, color='black', fontweight='bold')
-
-        ax.set_title('Website Funnel - Sessions per Step', fontsize=14, fontweight='bold')
-        ax.set_xlabel('Funnel Step', fontsize=12)
-        ax.set_ylabel('Sessions/ Droffoff %', fontsize=12)
-        plt.tight_layout()
-
-        st.pyplot(fig)
-
-
 
 
 
@@ -568,21 +499,21 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
 
 
         # Extract Year for filtering
-        w_sessions['year'] = w_sessions["created_at"].dt.year
+        website_sessions['year'] =  website_sessions["created_at"].dt.year
 
          # Extract Month for filtering
-        w_sessions["month"] = w_sessions["created_at"].dt.month_name()
+        website_sessions["month"] =  website_sessions["created_at"].dt.month_name()
         month_order = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"]
-        w_sessions["month"] = pd.Categorical(w_sessions["month"],categories=month_order,ordered=True)
+        website_sessions["month"] = pd.Categorical( website_sessions["month"],categories=month_order,ordered=True)
 
        
 
         # Filter options
-        Years = w_sessions["year"].dropna().sort_values().unique()
-        Month =w_sessions["month"].dropna().sort_values().unique()
-        Sources = w_sessions["utm_source"].dropna().unique()
-        Campaigns = w_sessions["utm_campaign"].dropna().unique()
-        Devices = w_sessions["device_type"].dropna().unique()
+        Years =  website_sessions["year"].dropna().sort_values().unique()
+        Month = website_sessions["month"].dropna().sort_values().unique()
+        Sources =  website_sessions["utm_source"].dropna().unique()
+        Campaigns =  website_sessions["utm_campaign"].dropna().unique()
+        Devices =  website_sessions["device_type"].dropna().unique()
         
         
 
@@ -599,7 +530,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
 
 
         # Apply filters
-        final_df_3 = w_sessions.copy()
+        final_df_3 =  website_sessions.copy()
         if selected_years:
             final_df_3 = final_df_3[final_df_3["year"].isin(selected_years)]
         if selected_months:
@@ -616,7 +547,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
 
         st.markdown("### 🟢 Session Count by Source")
         # Compute session counts by source
-        source_breakdown = (w_sessions.groupby("utm_source")["website_session_id"].count().reset_index().rename(columns={"website_session_id": "session_count"}))
+        source_breakdown = (website_sessions.groupby("utm_source")["website_session_id"].count().reset_index().rename(columns={"website_session_id": "session_count"}))
 
         st.dataframe(source_breakdown)
 
@@ -645,7 +576,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         st.markdown("### 🚦 Sessions by Traffic Source and Campaign")
 
         # Step 1: Group sessions by source and campaign
-        source_campaign = (w_sessions.groupby(['utm_source', 'utm_campaign']).agg(sessions=('website_session_id', 'count')).reset_index())
+        source_campaign = (website_sessions.groupby(['utm_source', 'utm_campaign']).agg(sessions=('website_session_id', 'count')).reset_index())
         st.dataframe(source_campaign)
 
         # Step 2: Create bar chart
@@ -679,14 +610,14 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         
 
         # Step 2: Extract weekday names
-        w_sessions["weekday"] = w_sessions["created_at"].dt.day_name()
+        website_sessions["weekday"] = website_sessions["created_at"].dt.day_name()
 
         # Step 3: Chronological weekday order
         weekday_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        w_sessions["weekday"] = pd.Categorical(w_sessions["weekday"], categories=weekday_order, ordered=True)
+        website_sessions["weekday"] = pd.Categorical(website_sessions["weekday"], categories=weekday_order, ordered=True)
 
         # Step 4: Aggregate session counts by weekday
-        weekday_sessions = (w_sessions.groupby("weekday").agg(sessions=("website_session_id", "count")).reset_index())
+        weekday_sessions = (website_sessions.groupby("weekday").agg(sessions=("website_session_id", "count")).reset_index())
 
         # Show DataFrame
         st.dataframe(weekday_sessions)
@@ -713,7 +644,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         st.markdown("---")
         st.markdown("### 💻 Source Breakdown by Device")
         
-        source_device = (w_sessions.groupby(['utm_source', 'device_type']).agg(session_count=('website_session_id', 'count')).reset_index())
+        source_device = (website_sessions.groupby(['utm_source', 'device_type']).agg(session_count=('website_session_id', 'count')).reset_index())
         st.dataframe(source_device)
 
         # Sort by session count for better readability
@@ -746,7 +677,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         pageview_counts['is_bounce'] = pageview_counts['pageview_count'] == 1
 
         # STEP 3: Merge with session data to get utm_source
-        session_data = w_sessions.merge(pageview_counts[['website_session_id', 'is_bounce']],on='website_session_id',how='left')
+        session_data = website_sessions.merge(pageview_counts[['website_session_id', 'is_bounce']],on='website_session_id',how='left')
 
         # Fill NaN (sessions with no pageviews) as not bounced
         session_data['is_bounce'] = session_data['is_bounce'].fillna(False)
@@ -784,13 +715,13 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         st.markdown("---")
         st.markdown("### 💰 Monetization Efficiency by UTM Source")
         # STEP 1: Merge orders with sessions to attribute revenue to sources
-        orders_with_source = orders.merge(w_sessions[['website_session_id', 'utm_source']],on='website_session_id',how='left')
+        orders_with_source = orders.merge(website_sessions[['website_session_id', 'utm_source']],on='website_session_id',how='left')
 
         # STEP 2: Total revenue per source
         revenue_per_source = (orders_with_source.groupby('utm_source').agg(total_revenue=('price_usd', 'sum')).reset_index())
 
         # STEP 3: Total sessions per source
-        session_counts = (w_sessions.groupby('utm_source').agg(total_sessions=('website_session_id', 'nunique')).reset_index())
+        session_counts = (website_sessions.groupby('utm_source').agg(total_sessions=('website_session_id', 'nunique')).reset_index())
 
         # STEP 4: Merge revenue and sessions, compute revenue per session
         monetization_efficiency = revenue_per_source.merge(session_counts, on='utm_source', how='outer')
@@ -847,8 +778,8 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         # merge with refund
         filtered_data = filtered_data.merge(order_item_refunds, how="left", on="order_item_id",suffixes=("","_refunds"))
 
-        # merge with w_sessions
-        filtered_data = filtered_data.merge(w_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
+        # merge with website_sessions
+        filtered_data = filtered_data.merge(website_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
 
         # Extract Year for filtering
         filtered_data["year"] = filtered_data["created_at_orderitem"].dt.year
@@ -926,8 +857,8 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
 
             st.markdown("---")
             st.markdown("### 🔁 Repeat vs New Sessions by UTM Source")
-            w_sessions['session_type'] = w_sessions['is_repeat_session'].apply(lambda x: 'Repeat' if x == 1 else 'New')
-            session_counts = w_sessions.groupby(['utm_source', 'session_type'])['website_session_id'].count().reset_index()
+            website_sessions['session_type'] = website_sessions['is_repeat_session'].apply(lambda x: 'Repeat' if x == 1 else 'New')
+            session_counts = website_sessions.groupby(['utm_source', 'session_type'])['website_session_id'].count().reset_index()
             session_counts.columns=['UTM_source','Session_type','Total_website_sessions']
             st.dataframe(session_counts)
 
@@ -955,10 +886,10 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         st.markdown("### 📈 Conversion Rate by UTM Campaign")
         # Mark converted sessions
         converted_sessions = final_df["website_session_id"].unique()
-        w_sessions["converted"] = w_sessions["website_session_id"].isin(converted_sessions).astype(int)
+        website_sessions["converted"] = website_sessions["website_session_id"].isin(converted_sessions).astype(int)
 
         # Group by utm_campaign and compute CVR
-        campaign_analysis = (w_sessions.groupby("utm_campaign").agg(Total_sessions=("website_session_id", "count"),Conversions=("converted", "sum")).assign(CVR_percentage=lambda x: round((x["Conversions"] / x["Total_sessions"]) * 100, 2)).sort_values("CVR_percentage", ascending=False).reset_index())
+        campaign_analysis = (website_sessions.groupby("utm_campaign").agg(Total_sessions=("website_session_id", "count"),Conversions=("converted", "sum")).assign(CVR_percentage=lambda x: round((x["Conversions"] / x["Total_sessions"]) * 100, 2)).sort_values("CVR_percentage", ascending=False).reset_index())
 
         # Display DataFrame in Streamlit
         st.dataframe(campaign_analysis)
@@ -981,45 +912,6 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
 
 
 
-        st.markdown("---")
-        st.markdown("### 💵 Brand vs Non Brand Efficiency")
-
-        # Tag sessions as brand vs. non-brand
-        w_sessions["campaign_type"] = w_sessions["utm_campaign"].apply(lambda x: "Brand" if "brand" in x.lower() else "Non-Brand")
-
-        # Mark converted sessions
-        converted_sessions = final_df["website_session_id"].unique()
-        w_sessions["converted"] = w_sessions["website_session_id"].isin(converted_sessions).astype(int)
-
-        # Merge revenue from orders to w_sessions
-        revenue_map = final_df.groupby("website_session_id")["price_usd_orderitem"].sum().div(1000000).to_dict()
-        w_sessions["revenue"] = w_sessions["website_session_id"].map(revenue_map).fillna(0)
-
-        # Group by campaign type
-        efficiency_analysis = (w_sessions.groupby("campaign_type").agg(total_sessions=("website_session_id", "count"),conversions=("converted", "sum"),total_revenue=("revenue", "sum"))
-       .assign(CVR_percentage=lambda x: round((x["conversions"] / x["total_sessions"]) * 100, 2)).reset_index())
-
-        # Display DataFrame
-        st.dataframe(efficiency_analysis)
-
-        # Plotting
-        fig, ax = plt.subplots(figsize=(10, 5))
-        sns.barplot(data=efficiency_analysis,x='campaign_type',y='total_revenue',color='skyblue',ax=ax,legend=False)
-
-        # Add formatted data labels
-        for container in ax.containers:
-            labels = [f'{bar.get_height():,.2f}' for bar in container]
-            ax.bar_label(container, labels=labels, label_type='edge', padding=3, fontsize=9)
-
-        ax.set_title('Revenue by Campaign Type')
-        ax.set_xlabel('Campaign Type')
-        ax.set_ylabel('Total Revenue ( in Millions USD)')
-
-        plt.tight_layout()
-
-        # Show plot in Streamlit
-        st.pyplot(fig)
-
 
 
 
@@ -1027,7 +919,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         st.markdown("### 💡 Pilot Campaugn Metrics")
 
         # Step 1: Filter 'Pilot' campaign sessions (case-insensitive)
-        pilot_sessions = w_sessions[w_sessions["utm_campaign"].str.lower() == "pilot"].copy()
+        pilot_sessions = website_sessions[website_sessions["utm_campaign"].str.lower() == "pilot"].copy()
 
         # Step 2: Proceed only if data exists
         if not pilot_sessions.empty:
@@ -1102,8 +994,8 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         # merge with refund
         filtered_data = filtered_data.merge(order_item_refunds, how="left", on="order_item_id",suffixes=("","_refunds"))
 
-        # merge with w_sessions
-        filtered_data = filtered_data.merge(w_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
+        # merge with website_sessions
+        filtered_data = filtered_data.merge(website_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
 
         # Extract Year for filtering
         filtered_data["year"] = filtered_data["created_at_orderitem"].dt.year
@@ -1215,18 +1107,18 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         st.markdown("---")
 
         # Step 1: Ensure 'created_at' is datetime
-        w_sessions["created_at"] = pd.to_datetime(w_sessions["created_at"])
+        website_sessions["created_at"] = pd.to_datetime(website_sessions["created_at"])
 
         # Step 2: Extract weekday and hour
-        w_sessions["weekday"] = w_sessions["created_at"].dt.day_name()
-        w_sessions["hour"] = w_sessions["created_at"].dt.hour
+        website_sessions["weekday"] = website_sessions["created_at"].dt.day_name()
+        website_sessions["hour"] = website_sessions["created_at"].dt.hour
 
         # Step 3: Chronological weekday ordering
         weekday_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        w_sessions["weekday"] = pd.Categorical(w_sessions["weekday"], categories=weekday_order, ordered=True)
+        website_sessions["weekday"] = pd.Categorical(website_sessions["weekday"], categories=weekday_order, ordered=True)
 
         # Step 4: Count sessions per day/hour
-        traffic_time_pattern = (w_sessions.groupby(["weekday", "hour"], observed=True).agg(session_count=("website_session_id", "count")).reset_index())
+        traffic_time_pattern = (website_sessions.groupby(["weekday", "hour"], observed=True).agg(session_count=("website_session_id", "count")).reset_index())
 
         # Step 5: Pivot table for visualization
        
@@ -1253,22 +1145,22 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
 
         st.markdown("---")
         # Step 1: Convert timestamp to datetime
-        w_sessions["created_at"] = pd.to_datetime(w_sessions["created_at"])
+        website_sessions["created_at"] = pd.to_datetime(website_sessions["created_at"])
 
         # Step 2: Extract weekday and hour
-        w_sessions["weekday"] = w_sessions["created_at"].dt.day_name()
-        w_sessions["hour"] = w_sessions["created_at"].dt.hour
+        website_sessions["weekday"] = website_sessions["created_at"].dt.day_name()
+        website_sessions["hour"] = website_sessions["created_at"].dt.hour
 
         # Optional: Chronological weekday order
         weekday_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        w_sessions["weekday"] = pd.Categorical(w_sessions["weekday"], categories=weekday_order, ordered=True)
+        website_sessions["weekday"] = pd.Categorical(website_sessions["weekday"], categories=weekday_order, ordered=True)
 
         # Step 3: Mark whether session converted
         converted_sessions = orders["website_session_id"].unique()
-        w_sessions["converted"] = w_sessions["website_session_id"].isin(converted_sessions).astype(int)
+        website_sessions["converted"] = website_sessions["website_session_id"].isin(converted_sessions).astype(int)
 
         # Step 4: Group and calculate session counts & conversions
-        conversion_trends = (w_sessions.groupby(["weekday", "hour"], observed=True).agg(Total_sessions=("website_session_id", "count"),conversions=("converted", "sum"))
+        conversion_trends = (website_sessions.groupby(["weekday", "hour"], observed=True).agg(Total_sessions=("website_session_id", "count"),conversions=("converted", "sum"))
                             .assign(CVR_percentage=lambda x: round((x["conversions"] / x["Total_sessions"]) * 100, 2)).reset_index())
 
         # Step 5: Pivot table for heatmap
@@ -1377,8 +1269,8 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         # merge with refund
         filtered_data = filtered_data.merge(order_item_refunds, how="left", on="order_item_id",suffixes=("","_refunds"))
 
-        # merge with w_sessions
-        filtered_data = filtered_data.merge(w_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
+        # merge with website_sessions
+        filtered_data = filtered_data.merge(website_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
 
         # Extract Year for filtering
         filtered_data["year"] = filtered_data["created_at_orderitem"].dt.year
@@ -1510,7 +1402,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
             st.markdown("---")
             st.markdown("### 🧩 Product wise conversion rate")
             Total_orders = final_df['order_id'].nunique()
-            Total_sessions = w_sessions['website_session_id'].count()
+            Total_sessions = website_sessions['website_session_id'].count()
 
             conversion_rate= Total_orders / Total_sessions
             
@@ -1671,8 +1563,8 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         # merge with refund
         filtered_data = filtered_data.merge(order_item_refunds, how="left", on="order_item_id",suffixes=("","_refunds"))
 
-        # merge with w_sessions
-        filtered_data = filtered_data.merge(w_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
+        # merge with website_sessions
+        filtered_data = filtered_data.merge(website_sessions,how="left",left_on="website_session_id",right_on="website_session_id",suffixes=("","_sessions"))
 
         # Extract Year for filtering
         filtered_data["year"] = filtered_data["created_at_orderitem"].dt.year
@@ -1932,7 +1824,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
             # Behavioural Segmentation
             page_counts = website_pageviews.groupby('website_session_id')['pageview_url'].nunique().reset_index(name='pages_viewed')
             
-            session_page_merged=w_sessions.merge(page_counts, on='website_session_id', how='left')
+            session_page_merged=website_sessions.merge(page_counts, on='website_session_id', how='left')
             session_page_merged.head(2)
 
             pageview_summary= session_page_merged.groupby('pages_viewed')['user_id'].nunique().reset_index(name='Number_of_Users')
