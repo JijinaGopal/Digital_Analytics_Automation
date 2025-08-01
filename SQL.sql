@@ -74,6 +74,13 @@ SELECT
 FROM orders_staging
 WHERE TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL;
 
+UPDATE orders
+SET cogs_usd = 
+  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
+  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0
+WHERE TRY_CAST(cogs_usd AS TIME) IS NOT NULL;
+
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -146,6 +153,13 @@ WHERE
         END, 105) IS NOT NULL AND
     TRY_CAST(REPLACE(LTRIM(RTRIM(price_usd)), ',', '.') AS FLOAT) IS NOT NULL AND
     TRY_CAST(REPLACE(LTRIM(RTRIM(cogs_usd)), ',', '.') AS FLOAT) IS NOT NULL;
+
+UPDATE order_items
+SET cogs_usd = 
+  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
+  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0
+WHERE TRY_CAST(cogs_usd AS TIME) IS NOT NULL;
+
 
 
 SELECT * from order_items 
@@ -496,6 +510,8 @@ UPDATE order_items SET is_primary_item = 0 WHERE is_primary_item IS NULL;
 UPDATE order_items SET price_usd = 0 WHERE price_usd IS NULL;
 UPDATE order_items SET cogs_usd = 0 WHERE cogs_usd IS NULL;
 
+
+
 UPDATE order_item_refunds SET refund_amount_usd = 0 WHERE refund_amount_usd IS NULL;
 
 -- ===================================
@@ -527,9 +543,11 @@ IF EXISTS (
 
 -- 2. Invalid price/cost in order_items
 IF EXISTS (
-    SELECT 1 FROM order_items WHERE price_usd <= 0 OR cogs_usd <= 0
+    SELECT 1 FROM order_items
+    WHERE TRY_CAST(price_usd AS FLOAT) <= 0 OR TRY_CAST(cogs_usd AS FLOAT) <= 0
 )
     PRINT 'Issue Found: Order items with price_usd or cogs_usd <= 0';
+
 
 -- 3. Negative quantity
 IF EXISTS (
