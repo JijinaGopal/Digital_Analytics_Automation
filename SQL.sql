@@ -182,7 +182,7 @@ DELETE FROM cte WHERE rn > 1
 ---replace null
 UPDATE order_items SET is_primary_item = 0 WHERE is_primary_item IS NULL;
 UPDATE order_items SET price_usd = 0 WHERE price_usd IS NULL;
-UPDATE order_items SET cogs_usd = 0 WHERE cogs_usd IS NULL
+UPDATE order_items SET cogs_usd_decimal = 0 WHERE cogs_usd_decimal IS NULL
 
 
 ---Invalid price/cost in order_items
