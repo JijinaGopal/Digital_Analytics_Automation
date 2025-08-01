@@ -8,7 +8,7 @@ TRUNCATE TABLE products;
 TRUNCATE TABLE website_sessions;
 TRUNCATE TABLE website_pageviews;
 
-
+EXEC sp_help 'order_items';
 
 ------------------------------------------------------ DATA LOAD ------------------------
 -- 1. Drop existing tables if they exist
@@ -140,13 +140,13 @@ SELECT
     TRY_CAST(REPLACE(LTRIM(RTRIM(cogs_usd)), ',', '.') AS FLOAT)
 FROM order_items_staging
 WHERE 
-    TRY_CONVERT(DATETIME, 
-        CASE 
-            WHEN LEN(LTRIM(RTRIM(created_at))) = 16 THEN LTRIM(RTRIM(created_at)) + ':00'
-            ELSE LTRIM(RTRIM(created_at))
-        END, 105) IS NOT NULL AND
+    TRY_CAST(order_item_id AS INT) IS NOT NULL AND
+    TRY_CAST(order_id AS INT) IS NOT NULL AND
+    TRY_CAST(product_id AS INT) IS NOT NULL AND
+    TRY_CAST(is_primary_item AS BIT) IS NOT NULL AND
     TRY_CAST(REPLACE(LTRIM(RTRIM(price_usd)), ',', '.') AS FLOAT) IS NOT NULL AND
     TRY_CAST(REPLACE(LTRIM(RTRIM(cogs_usd)), ',', '.') AS FLOAT) IS NOT NULL;
+
 
 SELECT * from order_items 
 
