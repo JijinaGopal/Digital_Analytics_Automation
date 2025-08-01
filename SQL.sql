@@ -11,7 +11,8 @@ ALTER TABLE website_sessions ALTER COLUMN created_at VARCHAR(50);
 BULK INSERT website_sessions
 FROM 'C:\Users\Administrator\Desktop\Automation\data\website_sessions.csv'
 WITH (
-    FIRSTROW = 2,
+    FORMAT = 'CSV',
+	FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
     TABLOCK
@@ -64,7 +65,8 @@ ALTER TABLE website_pageviews ALTER COLUMN created_at VARCHAR(50);
 BULK INSERT website_pageviews
 FROM 'C:\Users\Administrator\Desktop\Automation\data\website_pageviews.csv'
 WITH (
-    FIRSTROW = 2,
+    FORMAT = 'CSV',
+	FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
     TABLOCK
@@ -98,7 +100,8 @@ ALTER TABLE orders ALTER COLUMN created_at VARCHAR(50);
 BULK INSERT orders
 FROM 'C:\Users\Administrator\Desktop\Automation\data\orders.csv'
 WITH (
-    FIRSTROW = 2,
+    FORMAT = 'CSV',
+	FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
     TABLOCK
@@ -142,7 +145,8 @@ ALTER TABLE order_items ALTER COLUMN created_at VARCHAR(50)
 BULK INSERT order_items
 FROM 'C:\Users\Administrator\Desktop\Automation\data\order_items.csv'
 WITH (
-    FIRSTROW = 2,
+    FORMAT = 'CSV',
+	FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
     TABLOCK
@@ -194,7 +198,8 @@ ALTER TABLE order_item_refunds ALTER COLUMN created_at VARCHAR(50)
 BULK INSERT order_item_refunds
 FROM 'C:\Users\Administrator\Desktop\Automation\data\order_item_refunds.csv'
 WITH (
-    FIRSTROW = 2,
+    FORMAT = 'CSV',
+	FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
     TABLOCK
@@ -260,7 +265,8 @@ ALTER TABLE products ALTER COLUMN created_at VARCHAR(50)
 BULK INSERT products
 FROM 'C:\Users\Administrator\Desktop\Automation\data\products.csv'
 WITH (
-    FIRSTROW = 2,
+    FORMAT = 'CSV',
+	FIRSTROW = 2,
     FIELDTERMINATOR = ',',
     ROWTERMINATOR = '\n',
     TABLOCK
