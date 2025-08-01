@@ -74,12 +74,19 @@ SELECT
 FROM orders_staging
 WHERE TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL;
 
-UPDATE orders
-SET cogs_usd = 
-  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
-  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0
-WHERE TRY_CAST(cogs_usd AS TIME) IS NOT NULL;
+-- Step 1: Add a new column
+ALTER TABLE orders ADD cogs_usd_float FLOAT;
 
+-- Step 2: Extract numeric value from time
+UPDATE orders
+SET cogs_usd_float = 
+  DATEPART(HOUR, cogs_usd) + DATEPART(MINUTE, cogs_usd) / 100.0;
+
+-- Step 3: Drop the original wrong column (optional)
+ALTER TABLE orders DROP COLUMN cogs_usd;
+
+-- Step 4: Rename the new column (optional)
+EXEC sp_rename 'orders.cogs_usd_float', 'cogs_usd', 'COLUMN';
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -154,11 +161,20 @@ WHERE
     TRY_CAST(REPLACE(LTRIM(RTRIM(price_usd)), ',', '.') AS FLOAT) IS NOT NULL AND
     TRY_CAST(REPLACE(LTRIM(RTRIM(cogs_usd)), ',', '.') AS FLOAT) IS NOT NULL;
 
+-- Step 1: Add a new column
+ALTER TABLE order_items ADD cogs_usd_float FLOAT;
+
+-- Step 2: Extract numeric value from time
 UPDATE order_items
-SET cogs_usd = 
-  CAST(DATEPART(HOUR, cogs_usd) AS FLOAT) +
-  CAST(DATEPART(MINUTE, cogs_usd) AS FLOAT) / 100.0
-WHERE TRY_CAST(cogs_usd AS TIME) IS NOT NULL;
+SET cogs_usd_float = 
+  DATEPART(HOUR, cogs_usd) + DATEPART(MINUTE, cogs_usd) / 100.0;
+
+-- Step 3: Drop the original wrong column (optional)
+ALTER TABLE order_items DROP COLUMN cogs_usd;
+
+-- Step 4: Rename the new column (optional)
+EXEC sp_rename 'orders.cogs_usd_float', 'cogs_usd', 'COLUMN';
+
 
 
 
