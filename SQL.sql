@@ -23,7 +23,7 @@ CREATE TABLE orders_staging (
     primary_product_id INT,
     items_purchased INT,
     price_usd FLOAT,
-    cogs_usd FLOAT
+    cogs_usd VARCHAR(50)
 );
 
 -- 3. Bulk insert into staging table
@@ -70,10 +70,10 @@ SELECT
     primary_product_id,
     items_purchased,
     price_usd,
-    cogs_usd
+    TRY_CONVERT(FLOAT, cogs_usd)
 FROM orders_staging
 WHERE TRY_CONVERT(DATETIME, created_at, 105) IS NOT NULL;
-
+AND TRY_CONVERT(FLOAT, cogs_usd) IS NOT NULL;
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------
