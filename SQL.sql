@@ -93,8 +93,7 @@ TRUNCATE TABLE orders;
 
 ---change datatype to varchar
 ALTER TABLE orders ALTER COLUMN created_at VARCHAR(50);
-
-
+ALTER TABLE orders ALTER COLUMN cogs_usd VARCHAR(50);
 
 ---insert the data
 BULK INSERT orders
@@ -150,6 +149,7 @@ TRUNCATE TABLE order_items;
 
 ---change datatype to varchar
 ALTER TABLE order_items ALTER COLUMN created_at VARCHAR(50)
+ALTER TABLE order_items ALTER COLUMN cogs_usd VARCHAR(50);
 
 ---Insert the data
 BULK INSERT order_items
