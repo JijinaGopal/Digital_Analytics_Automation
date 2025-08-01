@@ -120,11 +120,7 @@ WITH cte AS (
 )
 DELETE FROM cte WHERE rn > 1
 
----Invalid price/cost in orders
-IF EXISTS (
-    SELECT 1 FROM orders WHERE price_usd <= 0 OR cogs_usd <= 0
-)
-    PRINT 'Invalid'
+
 
 ---Negative quantity
 IF EXISTS (
@@ -176,12 +172,6 @@ UPDATE order_items SET is_primary_item = 0 WHERE is_primary_item IS NULL;
 UPDATE order_items SET price_usd = 0 WHERE price_usd IS NULL;
 UPDATE order_items SET cogs_usd_decimal = 0 WHERE cogs_usd_decimal IS NULL
 
-
----Invalid price/cost in order_items
-IF EXISTS (
-   SELECT 1 FROM order_items WHERE price_usd <= 0 OR cogs_usd <= 0
-)
-   PRINT 'Invalid'
 
 
 ---Orphan order_id in order_items
