@@ -6,7 +6,7 @@ sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_Commerce_Project -E -i "C:\Users\Admin
 echo -----------------------------------
 
 echo STEP 2: Export cleaned data to folder
-python "C:\Users\Administrator\Desktop\Automation\exporting.py"
+"C:\Users\Administrator\AppData\Local\Programs\Python\Python39\python.exe" "C:\Users\Administrator\Desktop\Automation\exporting.py"
 
 echo -----------------------------------
 
