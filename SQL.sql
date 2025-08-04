@@ -460,7 +460,7 @@ IF EXISTS (
 -- 2. Invalid price/cost in order_items
 IF EXISTS (
     SELECT 1 FROM order_items
-    WHERE TRY_CAST(price_usd AS FLOAT) <= 0 OR TRY_CAST(cogs_usd AS FLOAT) <= 0
+    WHERE price_usd < 0 OR cogs_usd < 0
 )
     PRINT 'Issue Found: Order items with price_usd or cogs_usd <= 0';
 

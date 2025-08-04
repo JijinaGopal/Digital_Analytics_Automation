@@ -27,21 +27,21 @@ def load_all_data():
     products = load_csv("products.csv")
     website_pageviews = load_csv("website_pageviews.csv")
     website_sessions = load_csv("website_sessions.csv")
-    website_sessions=load_csv("website_sessions.csv")
+    
     
 
-    return orders, order_items, order_item_refunds, products, website_pageviews, website_sessions,website_sessions
+    return orders, order_items, order_item_refunds, products, website_pageviews, website_sessions
 
 # load Data
-orders, order_items, order_item_refunds, products, website_pageviews, website_sessions,website_sessions = load_all_data()
+orders, order_items, order_item_refunds, products, website_pageviews, website_sessions = load_all_data()
 
 orders["created_at"] = pd.to_datetime(orders["created_at"], errors="coerce")
 order_items["created_at"] = pd.to_datetime(order_items["created_at"], errors="coerce")
 order_item_refunds["created_at"] = pd.to_datetime(order_item_refunds["created_at"], errors="coerce")
 products["created_at"] = pd.to_datetime(products["created_at"], errors="coerce")
 website_pageviews["created_at"] = pd.to_datetime(website_pageviews["created_at"], errors="coerce")
-website_sessions['created_at'] = pd.to_datetime(website_pageviews['created_at'], errors="coerce")
-website_sessions["created_at"] = pd.to_datetime(website_sessions["created_at"], errors="coerce")
+website_sessions['created_at'] = pd.to_datetime(website_sessions['created_at'], errors="coerce")
+
 
 
 
@@ -54,7 +54,7 @@ st.session_state.orders = orders
 st.session_state.order_items = order_items
 st.session_state.products = products
 st.session_state.order_item_refunds = order_item_refunds
-st.session_state.website_sessions = website_sessions
+
 
 # credentials dictionary
 USER_CREDENTIALS = {
