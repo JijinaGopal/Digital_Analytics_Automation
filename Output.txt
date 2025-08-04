@@ -12,9 +12,9 @@ Changed database context to 'E_Commerce_Project'.
 
 (1731 rows affected)
 
-(7 rows affected)
+(8 rows affected)
 
-(7 rows affected)
+(8 rows affected)
 
 (472871 rows affected)
 
