@@ -5,7 +5,12 @@ sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_Commerce_Project -E -i "C:\Users\Admin
 
 echo -----------------------------------
 
-echo STEP 2: Git push changes to GitHub...
+echo STEP 2: Export cleaned data to folder
+python "C:\Users\Administrator\Desktop\Automation\exporting.py"
+
+echo -----------------------------------
+
+echo STEP 3: Git push changes to GitHub...
 cd "C:\Users\Administrator\Desktop\Automation"
 git add .
 git commit -m "Auto update after SQL cleaning - %DATE% %TIME%"

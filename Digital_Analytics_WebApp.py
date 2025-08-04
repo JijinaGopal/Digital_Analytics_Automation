@@ -12,11 +12,14 @@ from sqlalchemy import create_engine
 import warnings
 warnings.filterwarnings("ignore")
 
+if st.button("🔄 Refresh Data"):
+    st.cache_data.clear()
+    st.rerun()
 
 @st.cache_data
 
 def load_csv(filename):
-    return pd.read_csv(os.path.join("data", filename))
+    return pd.read_csv(os.path.join("cleaned_data", filename))
 
 
 
@@ -34,6 +37,8 @@ def load_all_data():
 
 # load Data
 orders, order_items, order_item_refunds, products, website_pageviews, website_sessions = load_all_data()
+
+
 
 orders["created_at"] = pd.to_datetime(orders["created_at"], errors="coerce")
 order_items["created_at"] = pd.to_datetime(order_items["created_at"], errors="coerce")
