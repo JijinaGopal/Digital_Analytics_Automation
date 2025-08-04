@@ -232,7 +232,7 @@ A fresh-faced startup on a mission to deliver high-quality, huggable stuffed toy
         bounce_rate = len(bounce_sessions) / len(session_page_counts) * 100
         avg_items_per_order=(final_df['items_purchased'].count())/(final_df['order_id'].nunique())
         avg_session_per_user=(website_sessions['website_session_id'].nunique())/(website_sessions['user_id'].nunique())
-        Total_products=Products['product_name'].nunique()
+        Total_products=products['product_name'].nunique()
         Average_revenue_per_buyer=(final_df['price_usd_orderitem'].sum()- final_df['refund_amount_usd'].sum())/(final_df['user_id'].nunique())
         Average_profit_per_buyer=(((final_df['price_usd_orderitem'].sum() - final_df['refund_amount_usd'].sum()) - final_df[final_df['order_item_refund_id'].isna()]['cogs_usd_orderitem'].sum()))/(final_df['user_id'].nunique())
 

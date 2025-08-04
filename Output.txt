@@ -11,5 +11,57 @@ Changed database context to 'E_Commerce_Project'.
 (1731 rows affected)
 
 (1731 rows affected)
-Msg 4861, Level 16, State 1, Server LAPTOP-2K6MH8QU\SQLEXPRESS, Line 208
-Cannot bulk load because the file "C:\Users\Administrator\Desktop\Automation\data\products.csv" could not be opened. Operating system error code 32(The process cannot access the file because it is being used by another process.).
+
+(6 rows affected)
+
+(6 rows affected)
+
+(472871 rows affected)
+
+(472871 rows affected)
+
+(1188124 rows affected)
+
+(470232 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(83328 rows affected)
+
+(83328 rows affected)
+
+(83328 rows affected)
+
+(39917 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
