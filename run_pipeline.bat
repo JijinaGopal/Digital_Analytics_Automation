@@ -1,12 +1,12 @@
 @echo off
 
 echo STEP 1: Import all files into SQL Server and clean ...
-sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_Commerce_Project -E -i "C:\Users\Administrator\Desktop\Automation\SQL.sql" > "C:\Users\Administrator\Desktop\Automation\Output.txt"
+sqlcmd -S LAPTOP-2K6MH8QU\SQLEXPRESS -d E_Commerce_Project -E -i "C:\Users\Administrator\Desktop\Automation\SQL_Cleaning.sql" > "C:\Users\Administrator\Desktop\Automation\Output.txt"
 
 echo -----------------------------------
 
 echo STEP 2: Export cleaned data to folder
-"C:\Users\Administrator\AppData\Local\Programs\Python\Python39\python.exe" "C:\Users\Administrator\Desktop\Automation\exporting.py"
+"C:\Users\Administrator\AppData\Local\Programs\Python\Python39\python.exe" "C:\Users\Administrator\Desktop\Automation\run_pipeline.py"
 
 echo -----------------------------------
 
