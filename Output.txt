@@ -1,0 +1,68 @@
+Changed database context to 'E_Commerce_Project'.
+
+(32313 rows affected)
+
+(32313 rows affected)
+
+(40026 rows affected)
+
+(40026 rows affected)
+
+(1731 rows affected)
+
+(1731 rows affected)
+
+(5 rows affected)
+
+(5 rows affected)
+
+(472871 rows affected)
+
+(472871 rows affected)
+
+(1188124 rows affected)
+
+(470232 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(83328 rows affected)
+
+(83328 rows affected)
+
+(83328 rows affected)
+
+(39917 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(0 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+
+(0 rows affected)
+Issue Found: Order items with price_usd or cogs_usd <= 0
